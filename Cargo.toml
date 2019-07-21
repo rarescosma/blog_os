@@ -1,6 +1,6 @@
 [package]
 name = "blog_os"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Rareș Cosma <rares@getbetter.ro>"]
 edition = "2018"
 

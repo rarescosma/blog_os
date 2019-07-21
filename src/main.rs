@@ -23,7 +23,7 @@ pub extern "C" fn _start() -> ! {
     test_main();
 
     println!("Still going strong.");
-    loop {}
+    blog_os::hlt_loop();
 }
 
 // our existing panic handler

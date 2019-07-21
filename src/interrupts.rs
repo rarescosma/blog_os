@@ -49,6 +49,7 @@ lazy_static! {
 pub fn init() {
     IDT.load();
     unsafe { PICS.lock().initialize() };
+    x86_64::instructions::interrupts::enable();
 }
 
 extern "x86-interrupt" fn breakpoint_handler(stack_frame: &mut InterruptStackFrame) {

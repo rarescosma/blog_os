@@ -8,6 +8,7 @@
 use core::panic::PanicInfo;
 
 pub mod vga_buffer;
+pub mod qemu_exit;
 
 
 #[macro_export]
@@ -25,11 +26,13 @@ pub fn test_runner(tests: &[&dyn Fn()]) {
     for test in tests {
         test();
     }
+    qemu_exit::succeed();
 }
 
 pub fn test_panic_handler(info: &PanicInfo) -> ! {
     serial_println!("[failed]\n");
     serial_println!("Error: {}\n", info);
+    qemu_exit::fail();
     loop {}
 }
 

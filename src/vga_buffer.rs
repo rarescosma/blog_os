@@ -5,6 +5,9 @@ use volatile::Volatile;
 
 use lazy_static::lazy_static;
 
+#[cfg(test)]
+use crate::{serial_print, serial_println};
+
 #[allow(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u8)]
@@ -131,7 +134,11 @@ lazy_static! {
 #[doc(hidden)]
 pub fn _print(args: fmt::Arguments) {
     use core::fmt::Write;
-    WRITER.lock().write_fmt(args).unwrap();
+    use x86_64::instructions::interrupts;
+
+    interrupts::without_interrupts(|| {
+        WRITER.lock().write_fmt(args).unwrap();
+    });
 }
 
 #[macro_export]
@@ -144,9 +151,6 @@ macro_rules! println {
     () => ($crate::print!("\n"));
     ($($arg:tt)*) => ($crate::print!("{}\n", format_args!($($arg)*)));
 }
-
-#[cfg(test)]
-use crate::{serial_print, serial_println};
 
 #[test_case]
 fn test_println_simple() {
@@ -166,14 +170,20 @@ fn test_println_many() {
 
 #[test_case]
 fn test_println_output() {
+    use core::fmt::Write;
+    use x86_64::instructions::interrupts;
+
     serial_print!("test_println_output... ");
 
     let s = "Some random string!";
-    println!("{}", s);
-    for (i,c) in s.chars().enumerate() {
-        let on_screen = WRITER.lock().buffer.chars[BUFFER_HEIGHT - 2][i].read();
-        assert_eq!(char::from(on_screen.ascii_character), c);
-    }
+    interrupts::without_interrupts(|| {
+        let mut writer = WRITER.lock();
+        writeln!(writer, "\n{}", s).expect("writeln failed");
+        for (i, c) in s.chars().enumerate() {
+            let on_screen = writer.buffer.chars[BUFFER_HEIGHT - 2][i].read();
+            assert_eq!(char::from(on_screen.ascii_character), c);
+        }
+    });
 
     serial_println!("[ok]");
 }

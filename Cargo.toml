@@ -18,6 +18,7 @@ features = ["spin_no_std"]
 [package.metadata.bootimage]
 test-args = [
   "-device", "isa-debug-exit,iobase=0xf4,iosize=0x04",
+  "-serial", "stdio",
 ]
 # The QEMU isa-debug-exit device will use (code << 1 | 1) as an exit code.
 # Our success code is 0x10. Therefore, (0x10 << 1) | 1 == 33

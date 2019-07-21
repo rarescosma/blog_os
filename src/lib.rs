@@ -9,17 +9,7 @@ use core::panic::PanicInfo;
 
 pub mod vga_buffer;
 pub mod qemu_exit;
-
-
-#[macro_export]
-macro_rules! serial_print {
-    ($($arg:tt)*) => ();
-}
-
-#[macro_export]
-macro_rules! serial_println {
-    ($($arg:tt)*) => ();
-}
+pub mod serial;
 
 pub fn test_runner(tests: &[&dyn Fn()]) {
     serial_println!("Running {} tests", tests.len());

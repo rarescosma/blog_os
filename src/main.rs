@@ -10,11 +10,14 @@
 
 use core::panic::PanicInfo;
 
-use blog_os::{print, println};
+use blog_os::{println, invoke_breakpoint};
 
 #[no_mangle] // don't mangle the name of this function
 pub extern "C" fn _start() -> ! {
     println!("Hello from RaresOS{}", "!");
+
+    blog_os::init();
+    invoke_breakpoint();
 
     #[cfg(test)]
     test_main();
